@@ -43,10 +43,27 @@ By default `map-type="GoogleMap"`
         width: 100%;
         height: 100%;
       }
+
+      #osmdefault {
+        top: 65px;
+        left: 0.5em;
+      }
+      #osmsatellite {
+        top: 88px;
+        left: 0.5em;
+      }
+      #osmhybrid {
+        top: 111px;
+        left: 0.5em;
+      }
     </style>
 
     <template id="osmMap" is="dom-if" if="{{_typeIsOpenStreetMap(mapType)}}">
       <osm-map longitude="{{longitude}}" latitude="{{latitude}}" zoom="{{zoom}}">
+        <div id="osmdefault" class="ol-control" on-click="updateMapSourceOSM" title="Show street map"><button>D</button></div>
+        <div id="osmsatellite" class="ol-control" on-click="updateMapSourceOSM" title="Show satellite map"><button>S</button></div>
+        <div id="osmhybrid" class="ol-control" on-click="updateMapSourceOSM" title="Show hybrid map"><button>H</button></div>
+        <osm-layer source="{{mapSource}}"></osm-layer>
         <template is="dom-repeat" items="{{polygons}}">
           <osm-poly fill-opacity="{{item.fillOpacity}}" stroke-color$="{{item.strokeColor}}" width$="{{item.width}}" closed$="{{item.closed}}" fill-color$="{{item.fillColor}}">
             <template is="dom-repeat" items="{{item.points}}">
@@ -223,6 +240,15 @@ By default `map-type="GoogleMap"`
         latitude: Number(latitude)
       });
       this.fire('update-gn-map');
+    },
+
+    updateMapSourceOSM: function(e) {
+      var val = {
+        "osmdefault": "osm",
+        "osmsatellite": "sat",
+        "osmhybrid": "hyb",
+      };
+      this.mapSource = val[e.srcElement.parentNode.id];
     },
 
     _typeIsOpenStreetMap: function (mapType) {
